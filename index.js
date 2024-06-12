@@ -40,7 +40,7 @@ app.listen(port, () => {
 
 
 // Example items for the API
-const itemsCollection = admin.firestore().collection('items');
+const itemsCollection = adminb.firestore().collection('items');
 
 // API endpoints for items
 app.get('/items', async (req, res) => {
