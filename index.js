@@ -8,7 +8,7 @@ const app = express();
 const port = process.env.PORT || 8080;
 
 
-var serviceAccount = require("path/to/serviceAccountKey.json");
+var serviceAccount = require("./calorie-calc-92ec4-firebase-adminsdk-gj2b1-30a696cb36.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
