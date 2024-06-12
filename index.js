@@ -31,9 +31,7 @@ app.get('/auth/callback', async (req, res) => {
     return res.status(400).send('Authorization code is missing.');
     
     res.redirect('/');
-  } catch (error) {
-    console.error('Failed to exchange authorization code for tokens:', error.response.data);
-    res.status(500).send('Failed to exchange authorization code for tokens.');
+  }
 });
 
 app.listen(port, () => {
