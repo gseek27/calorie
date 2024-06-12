@@ -6,7 +6,7 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 8080;
 
-var admin = require("firebase-admin");
+//var admin = require("firebase-admin");
 
 var serviceAccount = require("./calorie-calc-92ec4-firebase-adminsdk-gj2b1-30a696cb36.json");
 
