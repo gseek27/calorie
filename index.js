@@ -28,7 +28,7 @@ app.get('/login', (req, res) => {
 
 
  
-const db = min.firestore();
+const db = admin.firestore();
 
 // Route for handling the OAuth callback
 app.get('/auth/callback', async (req, res) => {
