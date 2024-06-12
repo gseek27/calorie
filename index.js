@@ -7,12 +7,12 @@ const app = express();
 const port = process.env.PORT || 8080;
 
 
-const serviceAccount = require("./calorie-calc-92ec4-firebase-adminsdk-gj2b1-30a696cb36.json");
+//const serviceAccount = require("./calorie-calc-92ec4-firebase-adminsdk-gj2b1-30a696cb36.json");
 
 const admin = require("firebase-admin"); // Use const for constant value
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(require("./calorie-calc-92ec4-firebase-adminsdk-gj2b1-30a696cb36.json"))
 });
  
 
