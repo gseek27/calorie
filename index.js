@@ -31,40 +31,7 @@ app.get('/auth/callback', async (req, res) => {
     return res.status(400).send('Authorization code is missing.');
   }
 
-  try {
-    // Make a POST request to exchange the authorization code for tokens
-    const response = await axios.post('https://oauth2.googleapis.com/token', querystring.stringify({
-      code: code,
-      client_id: '801152741544-nsi2u5tjr6a2p9um7n33us6h0nrqbm67.apps.googleusercontent.com', // Replace with your client ID
-      client_secret: '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', // Replace with your client secret
-      redirect_uri: 'https://66782de5-a54f-4ff7-a76a-ac8fbd137b4c-00-31mknz5piyqw0.picard.replit.dev/auth/callback',
-      grant_type: 'authorization_code'
-    }));
-
-    // Extract access token and ID token from response
-    const { access_token, id_token } = response.data;
-
-    // Now you can use the tokens to authenticate the user or fetch user information
-    // For demonstration purposes, let's just send the tokens in the response
-    //res.send(`Access Token: ${access_token}<br>ID Token: ${id_token}`);
-
-    // Verify ID token
-    const ticket = await oauth2Client.verifyIdToken({
-      idToken: id_token,
-      audience: '801152741544-nsi2u5tjr6a2p9um7n33us6h0nrqbm67.apps.googleusercontent.com',
-    });
-    const payload = ticket.getPayload();
-
-    // User information
-    const userId = payload.sub;
-    const userEmail = payload.email;
-
-    // For demonstration, log the tokens (in production, handle securely)
-    console.log(`Access Token: ${access_token}`);
-    console.log(`ID Token: ${id_token}`);
-    console.log(`User ID: ${userId}`);
-    console.log(`User Email: ${userEmail}`);
-
+ 
     
     res.redirect('/');
   } catch (error) {
