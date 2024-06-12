@@ -7,7 +7,6 @@ const admin = require('firebase-admin');
 const app = express();
 const port = process.env.PORT || 3004;
 
-var admin = require("firebase-admin");
 
 var serviceAccount = require("calorie-calc-92ec4-firebase-adminsdk-gj2b1-30a696cb36.json");
 
