@@ -33,13 +33,7 @@ app.get('/login', (req, res) => {
 });
 
 
-// Initialize Firebase Admin SDK
-const serviceAccount = require('./calorie-calc-92ec4-firebase-adminsdk-gj2b1-30a696cb36.json'); // Update this path
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
-
+ 
 const db = admin.firestore();
 
 // Route for handling the OAuth callback
