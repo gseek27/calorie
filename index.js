@@ -2,17 +2,12 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const admin = require('firebase-admin');
 
 const app = express();
 const port = process.env.PORT || 8080;
 
-
-var serviceAccount = require("./calorie-calc-92ec4-firebase-adminsdk-gj2b1-30a696cb36.json");
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
-
+ 
 
 
 app.use(cors());
@@ -33,7 +28,7 @@ app.get('/login', (req, res) => {
 
 
  
-const db = admin.firestore();
+const db = min.firestore();
 
 // Route for handling the OAuth callback
 app.get('/auth/callback', async (req, res) => {
