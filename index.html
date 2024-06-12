@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="google-signin-client_id"
+      content="801152741544-nsi2u5tjr6a2p9um7n33us6h0nrqbm67.apps.googleusercontent.com"
+    />
+
+    <script src="https://accounts.google.com/gsi/client" async></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+    <title>Calorie Deficit Calculator</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        width: 500px;
+      }
+
+      .header-row {
+        display: flex;
+        font-weight: bold;
+      }
+      .header-row div {
+        flex: 1;
+        margin-right: 10px;
+      }
+      .header-row div:last-child {
+        margin-right: 0;
+      }
+      .input-row {
+        display: flex;
+        margin-bottom: 10px;
+      }
+      .input-row select,
+      .input-row input {
+        margin-right: 10px;
+        flex: 1;
+      }
+      .input-row select:last-child,
+      .input-row input:last-child {
+        margin-right: 0;
+      }
+      .section {
+        margin-bottom: 20px;
+      }
+      .section h2 {
+        margin-bottom: 10px;
+      }
+      input {
+        background-color: #f0f8ff;
+      }
+      input[readonly] {
+        background-color: #e0e0e0;
+      }
+      select {
+        background-color: #ffff99;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input,
+      select {
+        margin-bottom: 10px;
+        padding: 5px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="https://accounts.google.com/gsi/client" async></script>
+
+    <button id="signout_button" class="g_id_signout">Sign Out</button>
+
+    <script type="text/javascript">
+      const button = document.getElementById("signout_button");
+      button.onclick = () => {
+        google.accounts.id.disableAutoSelect();
+        console.log("signed out");
+        window.location.href = "/login?logged_out=1";
+      };
+    </script>
+
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+
+      import firebase from "firebase/compat/app";
+      // Required for side-effects
+      import "firebase/firestore";
+
+
+
+      import initializeApp from "firebase/app";
+  
+
+      
+      import {
+        getFirestore,
+        collection,
+        getDocs,
+      } from "firebase/firestore";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyAactMBxki68c8k3q7WGTJZ1Xf6HXoyKKY",
+        authDomain: "calorie-calc-92ec4.firebaseapp.com",
+        projectId: "calorie-calc-92ec4",
+        storageBucket: "calorie-calc-92ec4.appspot.com",
+        messagingSenderId: "391012985073",
+        appId: "1:391012985073:web:0c4af02f61c04940966150",
+        measurementId: "G-R5QF8Y5SB7",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+
+
+      // Initialize Cloud Firestore and get a reference to the service
+
+      const db = firebase.firestore();
+
+
+
+
+      
+
+      // TODO: Add SDKs for Firebase products that you want to use
+
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      
+     
+    </script>
+
+
+
+
+    
+
+    <br /><br />
+
+    <h1>Calorie Deficit Calculator</h1>
+
+    <br />
+
+    <div class="section">
+      <h2>Harris-Benedict Equation Inputs</h2>
+      <hr />
+      <br />
+
+      <label for="Height">Height (inches)</label>
+      <input type="number" id="Height" min="1" value="65" />
+
+      <label for="Weight">Weight (pounds)</label>
+      <input
+        type="number"
+        id="Weight"
+        min="1"
+        value="205"
+        oninput="updateFat()"
+      />
+
+      <label for="Age">Age (years)</label>
+      <input type="number" id="Age" min="1" value="36" />
+
+      <label for="Gender">Gender</label>
+      <select id="Gender">
+        <option value="1">male</option>
+        <option value="2">female</option>
+      </select>
+
+      <label for="Activity">*Activity Level</label>
+      <select id="Activity">
+        <option value="1">sedentary</option>
+        <option value="2">light</option>
+        <option value="3">moderate</option>
+        <option value="4">very active</option>
+        <option value="5">extra active</option>
+      </select>
+
+      <label for="Lean">Lean Body Weight (pounds)</label>
+      <input
+        type="number"
+        id="Lean"
+        min="1"
+        value="125"
+        oninput="updateFat()"
+      />
+
+      <label for="Fat">*Body Fat %</label>
+      <input type="number" id="Fat" min="1" readonly />
+
+      <label for="Goal">Goal Weight (pounds)</label>
+      <input type="number" id="Goal" min="1" value="155" />
+
+      <label for="Option">Weight Loss Option:</label>
+      <select id="Option">
+        <option value="1">Lose 1 pound per week</option>
+        <option value="2">Lose 1/2 pound per week</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <br />
+      <h2>Results</h2>
+      <hr />
+      <br />
+
+      <label for="BMR">BMR</label>
+      <input type="number" id="BMR" min="1" value="130" readonly />
+
+      <label for="TDEE">TDEE</label>
+      <input type="number" id="TDEE" min="1" value="130" readonly />
+      <label for="BMI">*BMI</label>
+      <input type="number" id="BMI" min="1" value="20" readonly />
+    </div>
+
+    <div id="total">Total (Daily Calories): 0</div>
+
+    <br /><br />
+
+    <h2>Find Total Consumed Calories</h2>
+    <hr />
+
+    <div class="header-row">
+      <div>Food item</div>
+      <div>Quantity</div>
+      <div>Calories</div>
+    </div>
+
+    <br />
+
+
+
+    
+
+    <script type="text/javascript">
+
+      // Define itemSelect, quantityInput, and caloriesInput globally
+      let itemSelect;
+      let quantityInput;
+      let caloriesInput;
+
+      // Initialize itemSelect
+      itemSelect = document.createElement("select");
+      itemSelect.classList.add("food-items-list");
+
+      // Initialize quantityInput
+      quantityInput = document.createElement("input");
+
+
+      // Initialize caloriesInput
+      caloriesInput = document.createElement("input");
+
+      // Now you can access these variables anywhere within your script
+
+      let options = [];
+
+
+      async function fetchItems() {
+        const options = []; // Initialize options array
+        try {
+            const snapshot = await getDocs(collection(db, "items"));
+
+            snapshot.docs.forEach((doc) => {
+              options.push({
+                name: doc.data()["food-name"],
+                calories: doc.data()["food-calories"],
+                quantity: doc.data()["food-quantity"],
+              });
+            });
+
+            console.log(options); // Check the options array
+            // Update the dropdown or do any further processing here
+          } catch (error) {
+            console.error("Error fetching items Z: ", error);
+          }
+        }
+      
+      fetchItems();
+
+
+      
+
+      function addInputRow() {
+        console.log("hi, new row");
+
+        const inputContainer = document.getElementById("inputContainer");
+        const newRow = document.createElement("div");
+        newRow.classList.add("input-row");
+
+
+        // caloriesInput.readOnly = true;
+
+        itemSelect.onchange = () =>
+          updateCalories(itemSelect, quantityInput, caloriesInput);
+        quantityInput.oninput = () =>
+          updateCalories(itemSelect, quantityInput, caloriesInput);
+
+        newRow.appendChild(itemSelect);
+        newRow.appendChild(quantityInput);
+        newRow.appendChild(caloriesInput);
+        inputContainer.appendChild(newRow);
+     fetchItems();
+      }
+
+
+
+
+      function updateCalories(itemSelect, quantityInput, caloriesInput) {
+        const selectedCalories = parseFloat(itemSelect.value);
+
+        const quantity = parseFloat(quantityInput.value);
+        if (!isNaN(selectedCalories) && !isNaN(quantity)) {
+          caloriesInput.value = selectedCalories * quantity;
+        } else {
+          caloriesInput.value = 0;
+        }
+        calculateTotalCalories();
+      }
+
+
+      
+      
+
+      function updateFat() {
+        let weight = Number(document.getElementById("Weight").value);
+        let leanWeight = Number(document.getElementById("Lean").value);
+        let fat = 1 - leanWeight / weight;
+        document.getElementById("Fat").value = (fat * 100).toFixed(0);
+      }
+
+
+
+
+      
+      function calculateTotalCalories() {
+        let totalCal = 0;
+        const rows = document.querySelectorAll(".input-row");
+
+        rows.forEach((row) => {
+          const inputs = row.querySelectorAll("input");
+
+          if (inputs.length > 1) {
+            // Ensure there are at least two inputs
+            const caloriesInput = inputs[1];
+            const inputCalories = caloriesInput.value;
+            const calories = parseFloat(inputCalories);
+            totalCal += isNaN(calories) ? 0 : calories; // If calories is NaN, default to 0
+          }
+        });
+
+        let total = parseFloat(
+          document.getElementById("total").textContent.split(": ")[1],
+        );
+        let remainingCal = total - totalCal;
+
+        document.getElementById("totalCal").textContent =
+          "Total Calories Consumed: " + totalCal.toFixed(0);
+        document.getElementById("remainingCal").textContent =
+          "Total Calories Remaining: " + remainingCal.toFixed(0);
+      }
+
+    
+
+     
+
+      function calculateTotal() {
+        let total = 0;
+        let BMR = 0;
+        let TDEE = 0;
+        let BMI = 0;
+
+        if (document.getElementById("Gender").value === "1") {
+          BMR =
+            (6.25 * Number(document.getElementById("Height").value)) /
+              0.393701 +
+            (10 * Number(document.getElementById("Weight").value)) / 2.20462 -
+            5 * Number(document.getElementById("Age").value) +
+            5;
+        } else {
+          BMR =
+            (6.25 * Number(document.getElementById("Height").value)) /
+              0.393701 +
+            (10 * Number(document.getElementById("Weight").value)) / 2.20462 -
+            5 * Number(document.getElementById("Age").value) -
+            161;
+        }
+
+        switch (document.getElementById("Activity").value) {
+          case "1":
+            TDEE = BMR * 1.2;
+            break;
+          case "2":
+            TDEE = BMR * 1.375;
+            break;
+          case "3":
+            TDEE = BMR * 1.55;
+            break;
+          case "4":
+            TDEE = BMR * 1.725;
+            break;
+          case "5":
+            TDEE = BMR * 1.9;
+            break;
+        }
+
+        BMI =
+          Number(document.getElementById("Weight").value) /
+          2.20462 /
+          (Number(document.getElementById("Height").value) / 0.393701 / 100) **
+            2;
+
+        if (document.getElementById("Option").value === "1") {
+          total = TDEE - 500;
+        } else {
+          total = TDEE - 250;
+        }
+
+        document.getElementById("total").textContent =
+          "Total (Daily Calories): " + total.toFixed(0);
+        document.getElementById("BMI").value = BMI.toFixed(0);
+        document.getElementById("TDEE").value = TDEE.toFixed(0);
+        document.getElementById("BMR").value = BMR.toFixed(0);
+      }
+
+      
+
+      
+
+      /*
+      function updateDropdown(options) {
+        const dropdowns = document.querySelectorAll(".food-items-list");
+        dropdowns.forEach((dropdown) => {
+          const currentValue = dropdown.value;
+          dropdown.innerHTML = "";
+          options.forEach((optionData) => {
+            const option = document.createElement("option");
+            option.value = optionData.calories; // Assuming you want to use calories as the value
+            option.text = optionData.name;
+            dropdown.appendChild(option);
+          });
+          dropdown.value = currentValue;
+        });
+      }
+      */
+
+      // Make sure to call fetchItems to load the options initially
+
+      
+
+      // Call the function to fetch items
+      //fetchItems();
+
+      const apiUrl =
+        "https://30606fc8-349b-4b3d-a60a-3977b5b31963-00-12er4cmnid83u.kirk.replit.dev:3003/items";
+
+
+      // Fetch items from Firestore
+      fetchItems().then((items) => {
+          console.log("Fetched items:", items); // Log items to see if they are fetched correctly
+          items.forEach((item) => {
+            const option = document.createElement("option");
+            option.dataset.foodName = item["food-name"]; // Storing food name in dataset
+            option.dataset.foodQuantity = item["food-quantity"]; // Storing food quantity in dataset
+            option.dataset.foodCalories = item["food-calories"]; // Storing food calories in dataset
+            itemSelect.appendChild(option);
+          });
+          // Set the first cell as food name, second as quantity, and third as calories
+          if (items.length > 0) {
+            itemSelect.value = items[0]["food-name"];
+            quantityInput.value = items[0]["food-quantity"];
+            caloriesInput.value = items[0]["food-calories"];
+          }
+          updateCalories(itemSelect, quantityInput, caloriesInput);
+        })
+        .catch((error) => {
+          console.error("Error fetching items:", error);
+        });
+
+      
+
+     
+
+
+      
+
+      document.addEventListener("DOMContentLoaded", () => {
+        fetchItems();
+        updateFat();
+      });
+
+      
+
+      document.getElementById("Weight").addEventListener("input", updateFat);
+      document.getElementById("Goal").addEventListener("input", updateFat);
+
+      document.addEventListener("DOMContentLoaded", function () {
+        calculateTotal();
+        calculateTotalCalories();
+        const inputFields = document.querySelectorAll("input, select");
+        inputFields.forEach(function (inputField) {
+          inputField.addEventListener("input", function () {
+            calculateTotal();
+          });
+        });
+      });
+    </script>
+
+
+
+
+    
+    <div id="inputContainer"></div>
+
+    <!--addInputRow();onclick="calculateTotalCalories()-->
+    <button onclick="addInputRow();
+      calculateTotalCalories()">Add Current List Item</button>
+
+    <br />
+    <br />
+    <button onclick="calculateTotalCalories()">Calculate Total Calories</button>
+    <br />
+    <br />
+    <div id="totalCal">Total Calories Consumed: 0</div>
+    <div id="remainingCal">Total Calories Remaining: 0</div>
+
+    <br /><br />
+    <h2>Add New Items to the Food List</h2>
+    <hr />
+    <br />
+    <label for="newItemName">New Item Name:</label>
+    <input type="text" id="newItemName" placeholder="Enter item name" />
+    <label for="newItemValue">New Item Calories:</label>
+    <input type="number" id="newItemValue" placeholder="Enter item value" />
+    <button onclick="addNewItem()">Add New Item</button>
+
+    <script src="https://js.stripe.com/v3/"></script>
+  </body>
+</html>
